@@ -1,12 +1,28 @@
 package br.edu.faculdade.gui;
 
-import br.edu.faculdade.dao.CursoDAO;
-import br.edu.faculdade.modelo.Curso;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Toolkit;
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
+import br.edu.faculdade.dao.CursoDAO;
+import br.edu.faculdade.model.Curso;
 
 public class JanelaListarCursos extends JDialog {
     private JTable tabelaCursos;
@@ -44,7 +60,7 @@ public class JanelaListarCursos extends JDialog {
         JPanel painelCentral = new JPanel();
         painelCentral.setLayout(new BoxLayout(painelCentral, BoxLayout.Y_AXIS));
         // Criando a tabela
-        String[] colunas = {"ID", "Nome", "Carga Horária", "Limite de Alunos", "Status"};
+        String[] colunas = {"ID", "Nome", "Carga Horária", "Vagas", "Vagas Ocupadas", "Vagas Disponíveis", "Status"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -91,7 +107,9 @@ public class JanelaListarCursos extends JDialog {
                     curso.getId(),
                     curso.getNome(),
                     curso.getCargaHoraria(),
-                    curso.getLimiteAlunos(),
+                    curso.getVagas(),
+                    curso.getVagasOcupadas(),
+                    curso.getVagas() - curso.getVagasOcupadas(),
                     curso.isAtivo() ? "Ativo" : "Inativo"
                 };
                 modeloTabela.addRow(linha);

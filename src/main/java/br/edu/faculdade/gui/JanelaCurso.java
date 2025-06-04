@@ -1,21 +1,37 @@
 package br.edu.faculdade.gui;
 
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import br.edu.faculdade.dao.CursoDAO;
-import br.edu.faculdade.modelo.Curso;
+import br.edu.faculdade.model.Curso;
 
 public class JanelaCurso extends JDialog {
     private JTextField txtNome;
     private JSpinner spnCargaHoraria;
-    private JSpinner spnLimiteAlunos;
+    private JSpinner spnVagas;
     private JButton btnSalvar;
     private JButton btnCancelar;
     private Curso curso;
@@ -48,8 +64,6 @@ public class JanelaCurso extends JDialog {
     
     private void initComponents() {
         setLayout(new BorderLayout());
-        
-        // Painel de dados
         painelDados = new JPanel(new GridBagLayout());
         painelDados.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -72,48 +86,40 @@ public class JanelaCurso extends JDialog {
         // Carga Horária
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.weightx = 0.0;
         JLabel lblCargaHoraria = new JLabel("Carga Horária:");
         lblCargaHoraria.setFont(new Font("Segoe UI", Font.BOLD, 22));
         painelDados.add(lblCargaHoraria, gbc);
         
         gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        SpinnerNumberModel modelCargaHoraria = new SpinnerNumberModel(20, 20, 1000, 1);
+        SpinnerNumberModel modelCargaHoraria = new SpinnerNumberModel(20, 20, 9999, 1);
         spnCargaHoraria = new JSpinner(modelCargaHoraria);
         spnCargaHoraria.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         painelDados.add(spnCargaHoraria, gbc);
         
-        // Limite de Alunos
+        // Vagas
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.weightx = 0.0;
-        JLabel lblLimiteAlunos = new JLabel("Limite de Alunos:");
-        lblLimiteAlunos.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        painelDados.add(lblLimiteAlunos, gbc);
+        JLabel lblVagas = new JLabel("Vagas:");
+        lblVagas.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        painelDados.add(lblVagas, gbc);
         
         gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        SpinnerNumberModel modelLimiteAlunos = new SpinnerNumberModel(1, 1, 100, 1);
-        spnLimiteAlunos = new JSpinner(modelLimiteAlunos);
-        spnLimiteAlunos.setFont(new Font("Segoe UI", Font.PLAIN, 22));
-        painelDados.add(spnLimiteAlunos, gbc);
+        SpinnerNumberModel modelVagas = new SpinnerNumberModel(1, 1, 9999, 1);
+        spnVagas = new JSpinner(modelVagas);
+        spnVagas.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        painelDados.add(spnVagas, gbc);
         
         add(painelDados, BorderLayout.CENTER);
         
         // Painel de botões
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelBotoes.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
         btnSalvar = new JButton("Salvar", new FlatSVGIcon("icons/save.svg", 24, 24));
         btnCancelar = new JButton("Cancelar", new FlatSVGIcon("icons/cancel.svg", 24, 24));
-        
         btnSalvar.setFont(new Font("Segoe UI", Font.BOLD, 22));
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        
         painelBotoes.add(btnSalvar);
         painelBotoes.add(btnCancelar);
-        
         add(painelBotoes, BorderLayout.SOUTH);
         
         // Adicionando listeners
@@ -125,36 +131,27 @@ public class JanelaCurso extends JDialog {
         int largura = getWidth();
         int altura = getHeight();
         
-        // Calculando tamanho da fonte baseado no tamanho da janela
-        int tamanhoFonte = Math.min(largura, altura) / 40;
+        // Ajustando tamanho dos componentes
+        txtNome.setPreferredSize(new Dimension(largura - 100, 40));
+        spnCargaHoraria.setPreferredSize(new Dimension(200, 40));
+        spnVagas.setPreferredSize(new Dimension(200, 40));
         
-        // Atualizando fonte dos componentes
-        Font novaFonte = new Font("Segoe UI", Font.PLAIN, tamanhoFonte);
-        Font novaFonteBold = new Font("Segoe UI", Font.BOLD, tamanhoFonte);
-        
-        for (Component comp : painelDados.getComponents()) {
-            if (comp instanceof JLabel) {
-                comp.setFont(novaFonteBold);
-            } else if (comp instanceof JTextField || comp instanceof JSpinner) {
-                comp.setFont(novaFonte);
-            }
-        }
-        
-        btnSalvar.setFont(novaFonte);
-        btnCancelar.setFont(novaFonte);
+        // Ajustando tamanho dos botões
+        btnSalvar.setPreferredSize(new Dimension(150, 50));
+        btnCancelar.setPreferredSize(new Dimension(150, 50));
     }
     
     private void preencherDados() {
         txtNome.setText(curso.getNome());
         spnCargaHoraria.setValue(curso.getCargaHoraria());
-        spnLimiteAlunos.setValue(curso.getLimiteAlunos());
+        spnVagas.setValue(curso.getVagas());
     }
     
     private void salvar() {
         try {
             String nome = txtNome.getText().trim();
             int cargaHoraria = (Integer) spnCargaHoraria.getValue();
-            int limiteAlunos = (Integer) spnLimiteAlunos.getValue();
+            int vagas = (Integer) spnVagas.getValue();
             
             // Validações
             if (nome.length() < 3) {
@@ -166,11 +163,11 @@ public class JanelaCurso extends JDialog {
             }
             
             if (curso == null) {
-                curso = new Curso(nome, cargaHoraria, limiteAlunos);
+                curso = new Curso(nome, cargaHoraria, vagas);
             } else {
                 curso.setNome(nome);
                 curso.setCargaHoraria(cargaHoraria);
-                curso.setLimiteAlunos(limiteAlunos);
+                curso.setVagas(vagas);
             }
             
             CursoDAO dao = new CursoDAO();

@@ -1,12 +1,33 @@
 package br.edu.faculdade.gui;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class JanelaPrincipal extends JFrame {
     private static final int MIN_WIDTH = 1100;
@@ -188,7 +209,8 @@ public class JanelaPrincipal extends JFrame {
     }
     
     private void abrirRelatorioCursos() {
-        JOptionPane.showMessageDialog(this, "Funcionalidade em desenvolvimento");
+        JanelaRelatorios janela = new JanelaRelatorios(this);
+        janela.setVisible(true);
     }
     
     private void abrirRelatorioAlunos() {

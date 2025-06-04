@@ -28,43 +28,132 @@ Este é um sistema desenvolvido em Java para gerenciar cursos e alunos de uma in
    java -jar target/sistema-cursos-1.0-SNAPSHOT.jar
    ```
 
-## Funcionalidades
+## Manual do Usuário
+
+### Tela Principal
+
+A tela principal do sistema apresenta quatro opções principais:
+1. Cursos
+2. Alunos
+3. Relatórios
+4. Sair
 
 ### Gerenciamento de Cursos
-- Cadastro de novos cursos
-- Edição de cursos existentes
-- Exclusão de cursos
-- Ativação/desativação de cursos
-- Listagem de todos os cursos
-- Visualização de alunos por curso
+
+#### Cadastro de Curso
+1. Na tela principal, clique em "Cursos"
+2. Na janela de cursos, clique em "Novo Curso"
+3. Preencha os campos:
+   - Nome do Curso (mínimo 3 caracteres)
+   - Carga Horária (mínimo 20 horas)
+   - Limite de Alunos (mínimo 1 aluno)
+4. Clique em "Salvar"
+
+#### Edição de Curso
+1. Na lista de cursos, selecione o curso desejado
+2. Clique em "Editar Curso"
+3. Modifique os campos necessários
+4. Clique em "Salvar"
+
+#### Exclusão de Curso
+1. Na lista de cursos, selecione o curso desejado
+2. Clique em "Excluir Curso"
+3. Confirme a exclusão
+
+#### Ativação/Desativação de Curso
+1. Na lista de cursos, selecione o curso desejado
+2. Clique em "Ativar/Desativar Curso"
+3. Confirme a ação
 
 ### Gerenciamento de Alunos
-- Cadastro de novos alunos
-- Edição de dados dos alunos
-- Exclusão de alunos
-- Ativação/desativação de alunos
-- Listagem de alunos por curso
-- Filtro de alunos por curso
+
+#### Cadastro de Aluno
+1. Na tela principal, clique em "Alunos"
+2. Na janela de alunos, clique em "Novo Aluno"
+3. Preencha os campos:
+   - CPF (11 dígitos, único)
+   - Nome (mínimo 3 caracteres)
+   - Email (formato válido)
+   - Data de Nascimento (aluno deve ter pelo menos 16 anos)
+   - Curso (deve estar ativo)
+4. Clique em "Salvar"
+
+#### Edição de Aluno
+1. Na lista de alunos, selecione o aluno desejado
+2. Clique em "Editar Aluno"
+3. Modifique os campos necessários
+4. Clique em "Salvar"
+
+#### Exclusão de Aluno
+1. Na lista de alunos, selecione o aluno desejado
+2. Clique em "Excluir Aluno"
+3. Confirme a exclusão
+
+#### Ativação/Desativação de Aluno
+1. Na lista de alunos, selecione o aluno desejado
+2. Clique em "Ativar/Desativar Aluno"
+3. Confirme a ação
 
 ### Relatórios
-- Lista de todos os cursos e seus alunos
-- Lista de alunos ativos por curso
-- Lista de alunos inativos por curso
-- Exportação de relatórios para arquivo texto
 
-## Validações
+#### Listar Alunos de um Curso
+1. Na tela principal, clique em "Relatórios"
+2. Selecione o curso desejado no ComboBox
+3. Clique em "Listar Alunos do Curso"
+4. Escolha o local para salvar o arquivo
+5. O relatório será gerado com:
+   - Dados do curso
+   - Lista de alunos matriculados
+   - Total de alunos
 
-### Curso
-- Nome: obrigatório, mínimo 3 caracteres
-- Carga Horária: obrigatória, mínimo 20 horas
-- Limite de Alunos: obrigatório, mínimo 1 aluno
+#### Listar Todos os Cursos e Alunos
+1. Na tela principal, clique em "Relatórios"
+2. Clique em "Listar Cursos e Alunos"
+3. Escolha o local para salvar o arquivo
+4. O relatório será gerado com:
+   - Lista de todos os cursos
+   - Alunos matriculados em cada curso
+   - Totais por curso
 
-### Aluno
-- CPF: obrigatório, único, 11 dígitos
-- Nome: obrigatório, mínimo 3 caracteres
-- Email: obrigatório, formato válido
-- Data de Nascimento: obrigatória, aluno deve ter pelo menos 16 anos
-- Curso: obrigatório, deve estar ativo
+#### Exportar Alunos Ativos
+1. Na tela principal, clique em "Relatórios"
+2. Clique em "Exportar Alunos Ativos"
+3. Escolha o local para salvar o arquivo
+4. O relatório será gerado com:
+   - Lista de alunos ativos por curso
+   - Dados completos dos alunos
+   - Totais por curso
+
+#### Exportar Alunos Inativos
+1. Na tela principal, clique em "Relatórios"
+2. Clique em "Exportar Alunos Inativos"
+3. Escolha o local para salvar o arquivo
+4. O relatório será gerado com:
+   - Lista de alunos inativos por curso
+   - Dados completos dos alunos
+   - Totais por curso
+
+### Dicas de Uso
+
+1. **Validações**:
+   - Todos os campos obrigatórios são marcados com asterisco (*)
+   - As validações são feitas em tempo real
+   - Mensagens de erro são exibidas quando necessário
+
+2. **Navegação**:
+   - Use a tecla Tab para navegar entre os campos
+   - Use Enter para confirmar ações
+   - Use Esc para fechar janelas
+
+3. **Relatórios**:
+   - Os arquivos são salvos em formato .txt
+   - Escolha nomes descritivos para os arquivos
+   - Verifique se tem permissão de escrita no local escolhido
+
+4. **Boas Práticas**:
+   - Mantenha os dados atualizados
+   - Faça backup regular dos relatórios
+   - Verifique a consistência dos dados periodicamente
 
 ## Estrutura do Projeto
 
@@ -85,10 +174,13 @@ src/
 │   │               │   ├── JanelaCurso.java
 │   │               │   ├── JanelaListarAlunos.java
 │   │               │   ├── JanelaListarCursos.java
-│   │               │   └── JanelaPrincipal.java
-│   │               └── modelo/
-│   │                   ├── Aluno.java
-│   │                   └── Curso.java
+│   │               │   ├── JanelaPrincipal.java
+│   │               │   └── JanelaRelatorios.java
+│   │               ├── model/
+│   │               │   ├── Aluno.java
+│   │               │   └── Curso.java
+│   │               └── util/
+│   │                   └── RelatorioUtil.java
 │   └── resources/
 │       └── database.sql
 └── test/

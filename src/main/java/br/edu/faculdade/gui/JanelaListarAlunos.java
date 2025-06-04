@@ -1,14 +1,32 @@
 package br.edu.faculdade.gui;
 
-import br.edu.faculdade.dao.AlunoDAO;
-import br.edu.faculdade.dao.CursoDAO;
-import br.edu.faculdade.modelo.Aluno;
-import br.edu.faculdade.modelo.Curso;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Toolkit;
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
+import br.edu.faculdade.dao.AlunoDAO;
+import br.edu.faculdade.dao.CursoDAO;
+import br.edu.faculdade.model.Aluno;
+import br.edu.faculdade.model.Curso;
 
 public class JanelaListarAlunos extends JDialog {
     private JTable tabelaAlunos;
@@ -29,6 +47,7 @@ public class JanelaListarAlunos extends JDialog {
         
         initComponents();
         carregarCursos();
+        carregarAlunos();
         
         addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
@@ -58,7 +77,7 @@ public class JanelaListarAlunos extends JDialog {
         painelFiltro.add(btnFiltrar);
         add(painelFiltro, BorderLayout.NORTH);
         // Criando a tabela
-        String[] colunas = {"ID", "CPF", "Nome", "Email", "Data de Nascimento", "Curso", "Status"};
+        String[] colunas = {"ID", "Matrícula", "CPF", "Nome", "Email", "Telefone", "Curso", "Status"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -118,7 +137,7 @@ public class JanelaListarAlunos extends JDialog {
             List<Aluno> alunos;
             Curso cursoSelecionado = (Curso) cmbCurso.getSelectedItem();
             if (cursoSelecionado == null) {
-                alunos = alunoDAO.listarTodos(); // Corrigido: listar todos os alunos
+                alunos = alunoDAO.listarTodos();
             } else {
                 alunos = alunoDAO.listarPorCurso(cursoSelecionado.getId());
             }
@@ -126,11 +145,12 @@ public class JanelaListarAlunos extends JDialog {
             for (Aluno aluno : alunos) {
                 Object[] linha = {
                     aluno.getId(),
+                    aluno.getMatricula(),
                     aluno.getCpf(),
                     aluno.getNome(),
                     aluno.getEmail(),
-                    aluno.getDataNascimento(),
-                    aluno.getCurso().getNome(),
+                    aluno.getTelefone(),
+                    aluno.getCurso() != null ? aluno.getCurso().getNome() : "",
                     aluno.isAtivo() ? "Ativo" : "Inativo"
                 };
                 modeloTabela.addRow(linha);

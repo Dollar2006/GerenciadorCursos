@@ -1,7 +1,6 @@
 package br.edu.faculdade.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,22 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.edu.faculdade.factory.ConnectionFactory;
-import br.edu.faculdade.modelo.Aluno;
-import br.edu.faculdade.modelo.Curso;
+import br.edu.faculdade.model.Aluno;
+import br.edu.faculdade.model.Curso;
 
 public class AlunoDAO {
     
     public void inserir(Aluno aluno) throws SQLException {
-        String sql = "INSERT INTO alunos (cpf, nome, email, data_nascimento, id_curso) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO alunos (matricula, cpf, nome, email, telefone, id_curso) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            stmt.setString(1, aluno.getCpf());
-            stmt.setString(2, aluno.getNome());
-            stmt.setString(3, aluno.getEmail());
-            stmt.setDate(4, Date.valueOf(aluno.getDataNascimento()));
-            stmt.setInt(5, aluno.getCurso().getId());
+            stmt.setString(1, aluno.getMatricula());
+            stmt.setString(2, aluno.getCpf());
+            stmt.setString(3, aluno.getNome());
+            stmt.setString(4, aluno.getEmail());
+            stmt.setString(5, aluno.getTelefone());
+            stmt.setInt(6, aluno.getCurso().getId());
             
             stmt.executeUpdate();
             
@@ -38,18 +38,19 @@ public class AlunoDAO {
     }
     
     public void atualizar(Aluno aluno) throws SQLException {
-        String sql = "UPDATE alunos SET cpf = ?, nome = ?, email = ?, data_nascimento = ?, ativo = ?, id_curso = ? WHERE id = ?";
+        String sql = "UPDATE alunos SET matricula = ?, cpf = ?, nome = ?, email = ?, telefone = ?, id_curso = ?, ativo = ? WHERE id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, aluno.getCpf());
-            stmt.setString(2, aluno.getNome());
-            stmt.setString(3, aluno.getEmail());
-            stmt.setDate(4, Date.valueOf(aluno.getDataNascimento()));
-            stmt.setBoolean(5, aluno.isAtivo());
+            stmt.setString(1, aluno.getMatricula());
+            stmt.setString(2, aluno.getCpf());
+            stmt.setString(3, aluno.getNome());
+            stmt.setString(4, aluno.getEmail());
+            stmt.setString(5, aluno.getTelefone());
             stmt.setInt(6, aluno.getCurso().getId());
-            stmt.setInt(7, aluno.getId());
+            stmt.setBoolean(7, aluno.isAtivo());
+            stmt.setInt(8, aluno.getId());
             
             stmt.executeUpdate();
         }
@@ -67,19 +68,16 @@ public class AlunoDAO {
     }
     
     public Aluno buscarPorId(int id) throws SQLException {
-        String sql = "SELECT a.*, c.* FROM alunos a " +
-                    "JOIN cursos c ON a.id_curso = c.id " +
-                    "WHERE a.id = ?";
+        String sql = "SELECT a.*, c.* FROM alunos a LEFT JOIN cursos c ON a.id_curso = c.id WHERE a.id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, id);
             
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return criarAlunoDoResultSet(rs);
-                }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return criarAlunoDoResultSet(rs);
             }
         }
         return null;
@@ -96,10 +94,9 @@ public class AlunoDAO {
             
             stmt.setInt(1, idCurso);
             
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    alunos.add(criarAlunoDoResultSet(rs));
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                alunos.add(criarAlunoDoResultSet(rs));
             }
         }
         return alunos;
@@ -116,13 +113,28 @@ public class AlunoDAO {
             
             stmt.setInt(1, idCurso);
             
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    alunos.add(criarAlunoDoResultSet(rs));
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                alunos.add(criarAlunoDoResultSet(rs));
             }
         }
         return alunos;
+    }
+    
+    public boolean existeMatricula(String matricula) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM alunos WHERE matricula = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, matricula);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
     
     public boolean existeCpf(String cpf) throws SQLException {
@@ -133,22 +145,33 @@ public class AlunoDAO {
             
             stmt.setString(1, cpf);
             
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
         }
         return false;
     }
     
     public List<Aluno> listarTodos() throws SQLException {
-        String sql = "SELECT a.*, c.* FROM alunos a " +
-                     "JOIN cursos c ON a.id_curso = c.id ORDER BY a.nome";
+        String sql = "SELECT a.*, c.* FROM alunos a LEFT JOIN cursos c ON a.id_curso = c.id";
         List<Aluno> alunos = new ArrayList<>();
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                alunos.add(criarAlunoDoResultSet(rs));
+            }
+        }
+        return alunos;
+    }
+    
+    public List<Aluno> listarAtivos() throws SQLException {
+        String sql = "SELECT a.*, c.* FROM alunos a LEFT JOIN cursos c ON a.id_curso = c.id WHERE a.ativo = true";
+        List<Aluno> alunos = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 alunos.add(criarAlunoDoResultSet(rs));
             }
@@ -159,20 +182,24 @@ public class AlunoDAO {
     private Aluno criarAlunoDoResultSet(ResultSet rs) throws SQLException {
         Aluno aluno = new Aluno();
         aluno.setId(rs.getInt("a.id"));
+        aluno.setMatricula(rs.getString("a.matricula"));
         aluno.setCpf(rs.getString("a.cpf"));
         aluno.setNome(rs.getString("a.nome"));
         aluno.setEmail(rs.getString("a.email"));
-        aluno.setDataNascimento(rs.getDate("a.data_nascimento").toLocalDate());
+        aluno.setTelefone(rs.getString("a.telefone"));
         aluno.setAtivo(rs.getBoolean("a.ativo"));
         
-        Curso curso = new Curso();
-        curso.setId(rs.getInt("c.id"));
-        curso.setNome(rs.getString("c.nome"));
-        curso.setCargaHoraria(rs.getInt("c.carga_horaria"));
-        curso.setLimiteAlunos(rs.getInt("c.limite_alunos"));
-        curso.setAtivo(rs.getBoolean("c.ativo"));
+        if (rs.getInt("c.id") != 0) {
+            Curso curso = new Curso();
+            curso.setId(rs.getInt("c.id"));
+            curso.setNome(rs.getString("c.nome"));
+            curso.setCargaHoraria(rs.getInt("c.carga_horaria"));
+            curso.setVagas(rs.getInt("c.vagas"));
+            curso.setVagasOcupadas(rs.getInt("c.vagas_ocupadas"));
+            curso.setAtivo(rs.getBoolean("c.ativo"));
+            aluno.setCurso(curso);
+        }
         
-        aluno.setCurso(curso);
         return aluno;
     }
 } 

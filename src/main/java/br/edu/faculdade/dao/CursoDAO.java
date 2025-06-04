@@ -1,22 +1,28 @@
 package br.edu.faculdade.dao;
 
-import br.edu.faculdade.factory.ConnectionFactory;
-import br.edu.faculdade.modelo.Curso;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.edu.faculdade.factory.ConnectionFactory;
+import br.edu.faculdade.model.Curso;
 
 public class CursoDAO {
     
     public void inserir(Curso curso) throws SQLException {
-        String sql = "INSERT INTO cursos (nome, carga_horaria, limite_alunos) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cursos (nome, carga_horaria, vagas, vagas_ocupadas) VALUES (?, ?, ?, ?)";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             stmt.setString(1, curso.getNome());
             stmt.setInt(2, curso.getCargaHoraria());
-            stmt.setInt(3, curso.getLimiteAlunos());
+            stmt.setInt(3, curso.getVagas());
+            stmt.setInt(4, curso.getVagasOcupadas());
             
             stmt.executeUpdate();
             
@@ -29,16 +35,17 @@ public class CursoDAO {
     }
     
     public void atualizar(Curso curso) throws SQLException {
-        String sql = "UPDATE cursos SET nome = ?, carga_horaria = ?, limite_alunos = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE cursos SET nome = ?, carga_horaria = ?, vagas = ?, vagas_ocupadas = ?, ativo = ? WHERE id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, curso.getNome());
             stmt.setInt(2, curso.getCargaHoraria());
-            stmt.setInt(3, curso.getLimiteAlunos());
-            stmt.setBoolean(4, curso.isAtivo());
-            stmt.setInt(5, curso.getId());
+            stmt.setInt(3, curso.getVagas());
+            stmt.setInt(4, curso.getVagasOcupadas());
+            stmt.setBoolean(5, curso.isAtivo());
+            stmt.setInt(6, curso.getId());
             
             stmt.executeUpdate();
         }
@@ -107,7 +114,8 @@ public class CursoDAO {
         curso.setId(rs.getInt("id"));
         curso.setNome(rs.getString("nome"));
         curso.setCargaHoraria(rs.getInt("carga_horaria"));
-        curso.setLimiteAlunos(rs.getInt("limite_alunos"));
+        curso.setVagas(rs.getInt("vagas"));
+        curso.setVagasOcupadas(rs.getInt("vagas_ocupadas"));
         curso.setAtivo(rs.getBoolean("ativo"));
         return curso;
     }

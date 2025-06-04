@@ -5,24 +5,26 @@ CREATE TABLE IF NOT EXISTS cursos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     carga_horaria INT NOT NULL,
-    limite_alunos INT NOT NULL,
+    vagas INT NOT NULL,
+    vagas_ocupadas INT NOT NULL DEFAULT 0,
     ativo BOOLEAN DEFAULT TRUE,
     CONSTRAINT nome_min_length CHECK (LENGTH(nome) >= 3),
     CONSTRAINT carga_horaria_min CHECK (carga_horaria >= 20),
-    CONSTRAINT limite_alunos_min CHECK (limite_alunos >= 1)
+    CONSTRAINT vagas_min CHECK (vagas >= 1),
+    CONSTRAINT vagas_ocupadas_check CHECK (vagas_ocupadas >= 0 AND vagas_ocupadas <= vagas)
 );
 
 CREATE TABLE IF NOT EXISTS alunos (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    cpf VARCHAR(11) NOT NULL UNIQUE,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    data_nascimento DATE NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
     id_curso INT,
-    CONSTRAINT nome_min_length CHECK (LENGTH(nome) >= 3),
-    CONSTRAINT cpf_length CHECK (LENGTH(cpf) = 11),
+    CONSTRAINT nome_aluno_min_length CHECK (LENGTH(nome) >= 3),
     CONSTRAINT email_format CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),
-    CONSTRAINT idade_minima CHECK (TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) >= 16),
+    CONSTRAINT cpf_format CHECK (cpf REGEXP '^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$'),
     CONSTRAINT fk_curso FOREIGN KEY (id_curso) REFERENCES cursos(id) ON DELETE CASCADE
 ); 
