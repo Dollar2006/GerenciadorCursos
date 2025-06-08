@@ -1,5 +1,8 @@
 package br.edu.faculdade.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Curso {
     private int id;
     private String nome;
@@ -7,10 +10,12 @@ public class Curso {
     private int vagas;
     private int vagasOcupadas;
     private boolean ativo;
+    private List<Aluno> alunos;
 
     public Curso() {
         this.ativo = true;
         this.vagasOcupadas = 0;
+        this.alunos = new ArrayList<>();
     }
 
     public Curso(String nome, int cargaHoraria, int vagas) {
@@ -19,6 +24,7 @@ public class Curso {
         this.vagas = vagas;
         this.vagasOcupadas = 0;
         this.ativo = true;
+        this.alunos = new ArrayList<>();
     }
 
     public Curso(int id, String nome, int cargaHoraria, int vagas, int vagasOcupadas, boolean ativo) {
@@ -28,6 +34,7 @@ public class Curso {
         this.vagas = vagas;
         this.vagasOcupadas = vagasOcupadas;
         this.ativo = ativo;
+        this.alunos = new ArrayList<>();
     }
 
     public int getId() {
@@ -78,18 +85,29 @@ public class Curso {
         this.ativo = ativo;
     }
 
+    public List<Aluno> getAlunos() {
+        return alunos;
+    }
+
+    public void setAlunos(List<Aluno> alunos) {
+        this.alunos = alunos;
+    }
+
     public boolean podeAdicionarAluno() {
         return ativo && vagasOcupadas < vagas;
     }
 
-    public void adicionarAluno() {
+    public void adicionarAluno(Aluno aluno) {
         if (podeAdicionarAluno()) {
+            alunos.add(aluno);
             vagasOcupadas++;
+        } else {
+            throw new IllegalStateException("Não é possível adicionar mais alunos ao curso");
         }
     }
 
-    public void removerAluno() {
-        if (vagasOcupadas > 0) {
+    public void removerAluno(Aluno aluno) {
+        if (alunos.remove(aluno)) {
             vagasOcupadas--;
         }
     }

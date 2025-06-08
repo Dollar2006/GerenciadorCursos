@@ -12,6 +12,8 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,7 @@ public class JanelaAluno extends JDialog {
     private JTextField txtNome;
     private JTextField txtEmail;
     private JTextField txtTelefone;
+    private JTextField txtDataNascimento;
     private JComboBox<Curso> cmbCurso;
     private JButton btnSalvar;
     private JButton btnCancelar;
@@ -138,9 +141,21 @@ public class JanelaAluno extends JDialog {
         txtTelefone.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         painelDados.add(txtTelefone, gbc);
         
-        // Curso
+        // Data de Nascimento
         gbc.gridx = 0;
         gbc.gridy = 5;
+        JLabel lblDataNascimento = new JLabel("Data de Nascimento:");
+        lblDataNascimento.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        painelDados.add(lblDataNascimento, gbc);
+        
+        gbc.gridx = 1;
+        txtDataNascimento = new JTextField(20);
+        txtDataNascimento.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        painelDados.add(txtDataNascimento, gbc);
+        
+        // Curso
+        gbc.gridx = 0;
+        gbc.gridy = 6;
         JLabel lblCurso = new JLabel("Curso:");
         lblCurso.setFont(new Font("Segoe UI", Font.BOLD, 22));
         painelDados.add(lblCurso, gbc);
@@ -190,6 +205,7 @@ public class JanelaAluno extends JDialog {
         txtNome.setPreferredSize(new Dimension(largura - 100, 40));
         txtEmail.setPreferredSize(new Dimension(largura - 100, 40));
         txtTelefone.setPreferredSize(new Dimension(200, 40));
+        txtDataNascimento.setPreferredSize(new Dimension(200, 40));
         cmbCurso.setPreferredSize(new Dimension(largura - 100, 40));
         
         // Ajustando tamanho dos botões
@@ -219,6 +235,9 @@ public class JanelaAluno extends JDialog {
         txtNome.setText(aluno.getNome());
         txtEmail.setText(aluno.getEmail());
         txtTelefone.setText(aluno.getTelefone());
+        if (aluno.getDataNascimento() != null) {
+            txtDataNascimento.setText(aluno.getDataNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
         if (aluno.getCurso() != null) {
             cmbCurso.setSelectedItem(aluno.getCurso());
         }
@@ -236,6 +255,14 @@ public class JanelaAluno extends JDialog {
         return ValidadorCPF.validarCPF(cpf);
     }
     
+    private LocalDate converterData(String data) {
+        try {
+            return LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     private void salvar() {
         try {
             String matricula = txtMatricula.getText().trim();
@@ -243,6 +270,7 @@ public class JanelaAluno extends JDialog {
             String nome = txtNome.getText().trim();
             String email = txtEmail.getText().trim();
             String telefone = txtTelefone.getText().trim();
+            String dataNascimentoStr = txtDataNascimento.getText().trim();
             Curso curso = (Curso) cmbCurso.getSelectedItem();
             
             // Validações
@@ -294,6 +322,23 @@ public class JanelaAluno extends JDialog {
                 return;
             }
             
+            if (dataNascimentoStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "A data de nascimento é obrigatória.",
+                    "Erro de Validação",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            LocalDate dataNascimento = converterData(dataNascimentoStr);
+            if (dataNascimento == null) {
+                JOptionPane.showMessageDialog(this,
+                    "Data de nascimento inválida. Use o formato dd/mm/aaaa.",
+                    "Erro de Validação",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             if (curso == null) {
                 JOptionPane.showMessageDialog(this,
                     "Selecione um curso.",
@@ -327,13 +372,14 @@ public class JanelaAluno extends JDialog {
             }
             
             if (aluno == null) {
-                aluno = new Aluno(matricula, cpf, nome, email, telefone, curso);
+                aluno = new Aluno(matricula, cpf, nome, email, telefone, dataNascimento, curso);
             } else {
                 aluno.setMatricula(matricula);
                 aluno.setCpf(cpf);
                 aluno.setNome(nome);
                 aluno.setEmail(email);
                 aluno.setTelefone(telefone);
+                aluno.setDataNascimento(dataNascimento);
                 aluno.setCurso(curso);
             }
             

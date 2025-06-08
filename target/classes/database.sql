@@ -21,10 +21,11 @@ CREATE TABLE IF NOT EXISTS alunos (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
+    data_nascimento DATE NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
     id_curso INT,
     CONSTRAINT nome_aluno_min_length CHECK (LENGTH(nome) >= 3),
     CONSTRAINT email_format CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),
     CONSTRAINT cpf_format CHECK (cpf REGEXP '^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$'),
     CONSTRAINT fk_curso FOREIGN KEY (id_curso) REFERENCES cursos(id) ON DELETE CASCADE
-); 
+);

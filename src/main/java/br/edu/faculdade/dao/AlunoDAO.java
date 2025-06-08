@@ -15,7 +15,7 @@ import br.edu.faculdade.model.Curso;
 public class AlunoDAO {
     
     public void inserir(Aluno aluno) throws SQLException {
-        String sql = "INSERT INTO alunos (matricula, cpf, nome, email, telefone, id_curso) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO alunos (matricula, cpf, nome, email, telefone, data_nascimento, id_curso) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -25,7 +25,8 @@ public class AlunoDAO {
             stmt.setString(3, aluno.getNome());
             stmt.setString(4, aluno.getEmail());
             stmt.setString(5, aluno.getTelefone());
-            stmt.setInt(6, aluno.getCurso().getId());
+            stmt.setDate(6, java.sql.Date.valueOf(aluno.getDataNascimento()));
+            stmt.setInt(7, aluno.getCurso().getId());
             
             stmt.executeUpdate();
             
@@ -38,7 +39,7 @@ public class AlunoDAO {
     }
     
     public void atualizar(Aluno aluno) throws SQLException {
-        String sql = "UPDATE alunos SET matricula = ?, cpf = ?, nome = ?, email = ?, telefone = ?, id_curso = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE alunos SET matricula = ?, cpf = ?, nome = ?, email = ?, telefone = ?, data_nascimento = ?, id_curso = ?, ativo = ? WHERE id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -48,9 +49,10 @@ public class AlunoDAO {
             stmt.setString(3, aluno.getNome());
             stmt.setString(4, aluno.getEmail());
             stmt.setString(5, aluno.getTelefone());
-            stmt.setInt(6, aluno.getCurso().getId());
-            stmt.setBoolean(7, aluno.isAtivo());
-            stmt.setInt(8, aluno.getId());
+            stmt.setDate(6, java.sql.Date.valueOf(aluno.getDataNascimento()));
+            stmt.setInt(7, aluno.getCurso().getId());
+            stmt.setBoolean(8, aluno.isAtivo());
+            stmt.setInt(9, aluno.getId());
             
             stmt.executeUpdate();
         }
@@ -187,6 +189,7 @@ public class AlunoDAO {
         aluno.setNome(rs.getString("a.nome"));
         aluno.setEmail(rs.getString("a.email"));
         aluno.setTelefone(rs.getString("a.telefone"));
+        aluno.setDataNascimento(rs.getDate("a.data_nascimento").toLocalDate());
         aluno.setAtivo(rs.getBoolean("a.ativo"));
         
         if (rs.getInt("c.id") != 0) {
